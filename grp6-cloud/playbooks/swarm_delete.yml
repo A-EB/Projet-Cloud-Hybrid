@@ -1,0 +1,8 @@
+- name: Private CaaS - delete a Docker Swarm cluster
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: destroy-swarm.sh
+      command: "{{ playbook_dir }}/../scripts/destroy-swarm.sh {{ swarm_name }} --yes"
+      register: out
+    - debug: { var: out.stdout_lines }

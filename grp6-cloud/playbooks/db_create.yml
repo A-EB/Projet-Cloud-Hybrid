@@ -1,0 +1,15 @@
+- name: Private DBaaS - create a MariaDB database
+  hosts: localhost
+  gather_facts: false
+  vars:
+    vm_size: small
+    db_name: appdb
+    db_user: appuser
+  tasks:
+    - name: deploy-db.sh
+      command: "{{ playbook_dir }}/../scripts/deploy-db.sh {{ vm_name }} {{ vm_size }} {{ vm_ip }} {{ db_name }} {{ db_user }}"
+      environment:
+        DB_ROOT_PASSWORD: "{{ db_root_password }}"
+        DB_PASSWORD: "{{ db_password }}"
+      register: out
+    - debug: { var: out.stdout_lines }

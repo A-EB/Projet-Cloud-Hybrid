@@ -1,0 +1,10 @@
+# Terraform : binaires des providers, états (peuvent contenir des secrets), variables locales
+.terraform/
+*.tfstate
+*.tfstate.*
+terraform.tfstate.d/
+*.tfvars
+*.bak
+
+# Secrets du monitoring (token Proxmox)
+monitoring/pve.yml

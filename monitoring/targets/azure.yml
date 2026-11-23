@@ -1,0 +1,4 @@
+- targets: ['158.158.126.37:9100']
+  labels:
+    cloud: azure
+    vm: grp6-azvm

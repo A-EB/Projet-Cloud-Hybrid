@@ -1,0 +1,11 @@
+- name: Private CaaS - create a Docker Swarm cluster
+  hosts: localhost
+  gather_facts: false
+  vars:
+    swarm_size: small
+    swarm_count: 3
+  tasks:
+    - name: deploy-swarm.sh (5-10 min)
+      command: "{{ playbook_dir }}/../scripts/deploy-swarm.sh {{ swarm_name }} {{ swarm_size }} {{ swarm_ip }} {{ swarm_count }}"
+      register: out
+    - debug: { var: out.stdout_lines }

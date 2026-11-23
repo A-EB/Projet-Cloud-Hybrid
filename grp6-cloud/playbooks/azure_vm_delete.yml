@@ -1,0 +1,13 @@
+- name: Azure IaaS - delete the Linux VM
+  hosts: localhost
+  gather_facts: false
+  vars:
+    tf_dir: "{{ playbook_dir }}/../terraform/azure-vm"
+  tasks:
+    - name: Terraform init
+      command: terraform init -input=false -no-color
+      args: { chdir: "{{ tf_dir }}" }
+
+    - name: Terraform destroy
+      command: terraform destroy -auto-approve -input=false -no-color
+      args: { chdir: "{{ tf_dir }}" }

@@ -1,0 +1,27 @@
+- name: Proxmox IaaS - delete a VM
+  hosts: localhost
+  gather_facts: false
+  vars:
+    vm_size: small
+    tf_dir: "{{ playbook_dir }}/../terraform/iaas"
+  tasks:
+    - name: Reset the selected workspace
+      file: { path: "{{ tf_dir }}/.terraform/environment", state: absent }
+
+    - name: Terraform init
+      command: terraform init -input=false -no-color
+      args: { chdir: "{{ tf_dir }}" }
+
+    - name: Select the VM workspace
+      command: terraform workspace select -no-color vm-{{ vm_name }}
+      args: { chdir: "{{ tf_dir }}" }
+
+    - name: Terraform destroy
+      command: >
+        terraform destroy -auto-approve -input=false -no-color
+        -var=name={{ vm_name }} -var=size={{ vm_size }} -var=ip={{ vm_ip }}
+      args: { chdir: "{{ tf_dir }}" }
+
+    - name: Remove the empty workspace
+      shell: terraform workspace select -no-color default && terraform workspace delete -no-color vm-{{ vm_name }}
+      args: { chdir: "{{ tf_dir }}" }

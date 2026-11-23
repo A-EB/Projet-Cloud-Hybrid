@@ -1,0 +1,9 @@
+- name: Private CaaS - create a Docker host
+  hosts: localhost
+  gather_facts: false
+  vars: { vm_size: small }
+  tasks:
+    - name: deploy-docker.sh
+      command: "{{ playbook_dir }}/../scripts/deploy-docker.sh {{ vm_name }} {{ vm_size }} {{ vm_ip }}"
+      register: out
+    - debug: { var: out.stdout_lines }

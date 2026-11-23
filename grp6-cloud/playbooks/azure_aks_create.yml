@@ -1,0 +1,24 @@
+- name: Azure Kubernetes - create AKS + nginx front
+  hosts: localhost
+  gather_facts: false
+  vars:
+    tf_dir: "{{ playbook_dir }}/../terraform/azure-aks"
+  tasks:
+    - name: Terraform init
+      command: terraform init -input=false -no-color
+      args: { chdir: "{{ tf_dir }}" }
+
+    - name: Step 1 - AKS cluster (5-10 min)
+      command: terraform apply -auto-approve -input=false -no-color -target=azurerm_kubernetes_cluster.aks
+      args: { chdir: "{{ tf_dir }}" }
+
+    - name: Step 2 - nginx, HPA, LoadBalancer
+      command: terraform apply -auto-approve -input=false -no-color
+      args: { chdir: "{{ tf_dir }}" }
+
+    - name: Outputs
+      command: terraform output -no-color
+      args: { chdir: "{{ tf_dir }}" }
+      register: out
+
+    - debug: { var: out.stdout_lines }

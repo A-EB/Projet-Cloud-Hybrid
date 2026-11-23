@@ -1,0 +1,8 @@
+- name: Private CaaS - delete a Docker host
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: destroy-docker.sh
+      command: "{{ playbook_dir }}/../scripts/destroy-docker.sh {{ vm_name }} --yes"
+      register: out
+    - debug: { var: out.stdout_lines }

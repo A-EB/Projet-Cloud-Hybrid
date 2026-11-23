@@ -1,0 +1,5 @@
+default:
+  user: monitor@pve
+  token_name: prom
+  token_value: <TOKEN_PROXMOX>
+  verify_ssl: false

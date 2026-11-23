@@ -1,0 +1,20 @@
+- name: Azure IaaS - create the Linux VM
+  hosts: localhost
+  gather_facts: false
+  vars:
+    tf_dir: "{{ playbook_dir }}/../terraform/azure-vm"
+  tasks:
+    - name: Terraform init
+      command: terraform init -input=false -no-color
+      args: { chdir: "{{ tf_dir }}" }
+
+    - name: Terraform apply
+      command: terraform apply -auto-approve -input=false -no-color
+      args: { chdir: "{{ tf_dir }}" }
+
+    - name: Outputs
+      command: terraform output -no-color
+      args: { chdir: "{{ tf_dir }}" }
+      register: out
+
+    - debug: { var: out.stdout_lines }

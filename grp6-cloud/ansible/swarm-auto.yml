@@ -1,0 +1,42 @@
+- hosts: swarm
+  become: true
+  tasks:
+    - name: Install Docker and the Python Docker module
+      ansible.builtin.apt:
+        name:
+          - docker.io
+          - python3-docker
+        state: present
+        update_cache: true
+
+    - name: Start and enable Docker
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Allow grp6 to use Docker
+      ansible.builtin.user:
+        name: grp6
+        groups: docker
+        append: true
+
+- hosts: swarm_manager
+  become: true
+  tasks:
+    - name: Create the swarm on the manager
+      community.docker.docker_swarm:
+        state: present
+        advertise_addr: "{{ ansible_host }}"
+      register: swarm
+
+- hosts: swarm_workers
+  become: true
+  tasks:
+    - name: Join the swarm as a worker
+      community.docker.docker_swarm:
+        state: join
+        advertise_addr: "{{ ansible_host }}"
+        join_token: "{{ hostvars[groups['swarm_manager'][0]].swarm.swarm_facts.JoinTokens.Worker }}"
+        remote_addrs:
+          - "{{ hostvars[groups['swarm_manager'][0]].ansible_host }}:2377"

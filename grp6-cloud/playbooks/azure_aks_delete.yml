@@ -1,0 +1,13 @@
+- name: Azure Kubernetes - delete AKS
+  hosts: localhost
+  gather_facts: false
+  vars:
+    tf_dir: "{{ playbook_dir }}/../terraform/azure-aks"
+  tasks:
+    - name: Terraform init
+      command: terraform init -input=false -no-color
+      args: { chdir: "{{ tf_dir }}" }
+
+    - name: Terraform destroy (about 5 min)
+      command: terraform destroy -auto-approve -input=false -no-color
+      args: { chdir: "{{ tf_dir }}" }

@@ -1,0 +1,53 @@
+- hosts: db
+  become: true
+  vars:
+    db_name: appdb
+    db_user: appuser
+
+  tasks:
+    - name: Check that passwords were provided
+      ansible.builtin.assert:
+        that:
+          - db_root_password is defined
+          - db_password is defined
+        fail_msg: "Pass db_root_password and db_password with -e"
+
+    - name: Install Docker and the Python Docker module
+      ansible.builtin.apt:
+        name:
+          - docker.io
+          - python3-docker
+        state: present
+        update_cache: true
+
+    - name: Start and enable Docker
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Create data folder
+      ansible.builtin.file:
+        path: /opt/mariadb/data
+        state: directory
+        mode: "0755"
+
+    - name: Run MariaDB container
+      community.docker.docker_container:
+        name: mariadb
+        image: mariadb:11
+        restart_policy: unless-stopped
+        published_ports:
+          - "3306:3306"
+        volumes:
+          - /opt/mariadb/data:/var/lib/mysql
+        env:
+          MARIADB_ROOT_PASSWORD: "{{ db_root_password }}"
+          MARIADB_DATABASE: "{{ db_name }}"
+          MARIADB_USER: "{{ db_user }}"
+          MARIADB_PASSWORD: "{{ db_password }}"
+
+    - name: Wait until MariaDB answers on port 3306
+      ansible.builtin.wait_for:
+        port: 3306
+        timeout: 60
